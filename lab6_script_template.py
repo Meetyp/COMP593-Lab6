@@ -2,6 +2,7 @@ import requests
 import hashlib
 import os
 import subprocess
+import time
 
 def main():
 
@@ -35,9 +36,10 @@ def get_expected_sha256():
         file_content = resp_msg.text
         # Split the text file content to get hashvalue
         hash_value = file_content.split('*')[0]
-        # Print the SHA-256
-        print(hash_value.strip())
-    return hash_value.strip()
+        # Print the expected SHA-256 value
+        hash_value = hash_value.strip()
+        print("Expected sha256 value: " + hash_value)
+    return hash_value
 
 def download_installer():
     # Send GET message to download the file
@@ -50,7 +52,11 @@ def download_installer():
     return file_content
 
 def installer_ok(installer_data, expected_sha256):
+    # Calculate SHA-256 hash value
     exe_hash = hashlib.sha256(installer_data).hexdigest()
+    # Print our exe sha256 value
+    print("Our exe sha256 value: " + exe_hash)
+    # Matching both the sha256 value 
     if exe_hash == expected_sha256:
         print("Match")
         return True
@@ -58,8 +64,9 @@ def installer_ok(installer_data, expected_sha256):
         print("Not Match")
 
 def save_installer(installer_data):
+    # Building filepath
     get_temp_path = os.getenv('TEMP')
-    filename = 'Vlc.exe'
+    filename = 'file.exe'
     file_path = os.path.join(get_temp_path, filename)
     # Save the binary file to disk
     with open(file_path, 'wb') as file:
@@ -67,9 +74,17 @@ def save_installer(installer_data):
     return file_path
 
 def run_installer(installer_path):
-    subprocess.run([installer_path, '/L=1033', '/S'])
+    print("Installation begain...")
+    print("It will take around 1 minute.")
+    print("Please press 'YES' for User Account Control to continue the process.")
+    # Run installer silently
+    subprocess.Popen([installer_path, '/L=1033', '/S'], shell=True)
     
 def delete_installer(installer_path):
+    # In my system it takes around 31 sec to install but I give it 1 min for safe side
+    time.sleep(60)
+    print("Installation Complete. Enjoy!")
+    # Delete the installer
     os.remove(installer_path)
 
 if __name__ == '__main__':
