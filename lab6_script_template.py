@@ -75,14 +75,12 @@ def save_installer(installer_data):
 
 def run_installer(installer_path):
     print("Installation begain...")
-    print("It will take around 1 minute.")
+    print("It will take some moments...")
     print("Please press 'YES' for User Account Control to continue the process.")
     # Run installer silently
-    subprocess.Popen([installer_path, '/L=1033', '/S'], shell=True)
+    subprocess.run([installer_path, '/L=1033', '/S'], shell=True)
     
 def delete_installer(installer_path):
-    # In my system it takes around 31 sec to install but I give it 1 min for safe side
-    time.sleep(60)
     print("Installation Complete. Enjoy!")
     # Delete the installer
     os.remove(installer_path)
